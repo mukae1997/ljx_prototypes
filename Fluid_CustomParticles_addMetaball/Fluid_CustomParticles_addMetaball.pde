@@ -96,7 +96,7 @@ private class MyFluidData implements DwFluid2D.FluidData {
       fluid.addDensity(local_px, local_py, radius, 0.2f, 0.3f, 0.5f, 1.0f);
       fluid.addTemperature(local_px, local_py, radius, temperature);
 
-      particles.spawn(fluid, local_px, local_py, radius, 50); // default spawn
+      particles.spawn(fluid, local_px, local_py, radius, 200); // default spawn
     }
     boolean mouse_input = !cp5.isMouseOver() && mousePressed;
 
@@ -135,10 +135,17 @@ private class MyFluidData implements DwFluid2D.FluidData {
   }
 }
 
+// ------------- my modify -------------
+
 MetaBallTest mb;
 Particle3DSystem ps;
 
+boolean USE_METABALLS = !true;
+
 CVImage img;
+
+ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+// ------------- my modify -------------
 
 int viewport_w = 1280;
 int viewport_h = 720;
@@ -208,7 +215,12 @@ public void setup() {
   fluid.param.dissipation_velocity    = 0.99f;
   fluid.param.dissipation_temperature = 0.80f;
   fluid.param.vorticity               = 0.10f;
-  fluid.param.timestep = 0.30f; // play with it
+
+  // ------------- my modify -------------
+  fluid.param.timestep = 0.30f; // playwithit
+  // ------------- my modify -------------
+
+
   // interface for adding data to the fluid simulation
   MyFluidData cb_fluid_data = new MyFluidData();
   fluid.addCallback_FluiData(cb_fluid_data);
@@ -254,21 +266,24 @@ public void setup() {
 
 
 
-public void draw() {    
+public void draw() { 
 
-  if (mousePressed && frameCount % 2 == 0) {
-    PVector p = new PVector(mouseX, mouseY, 0);
-    p.add(PVector.random2D().mult(40));
-    ps.addParticles(1, p);
-  }
 
-  ps.update();
-  if (frameCount % 60 == 0) {
-    println(ps.cles.size());
+
+  if (!USE_METABALLS) {
+    ps.update();
+    if (frameCount % 60 == 0) 
+      println(ps.cles.size());
+
+    if (mousePressed && frameCount % 2 == 0) {
+      PVector p = new PVector(mouseX, mouseY, 0);
+      p.add(PVector.random2D().mult(50));
+      ps.addParticles(1, p);
+    }
   }
   // update simulation
   if (UPDATE_FLUID) {
-    if (false) {
+    if (USE_METABALLS) {
       pg_metaball.beginDraw();
       pg_metaball.clear();
       pg_metaball.background(0);
@@ -290,14 +305,14 @@ public void draw() {
     pg_obstacles.beginDraw();
 
     pg_obstacles.clear();
-    if (frameCount % 50 == 0 && false) {
-      ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-      Mat hierarchy = new Mat();
-      Imgproc.findContours(img.getGrey(), contours, hierarchy, 
-        Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-      // Imgproc.RETR_EXTERNAL
-      // Imgproc.RETR_FLOODFILL
-
+    if (USE_METABALLS) {
+      if ( frameCount % 1 == 0) { // reduce update by CV
+        Mat hierarchy = new Mat();
+        Imgproc.findContours(img.getGrey(), contours, hierarchy, 
+          Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        // Imgproc.RETR_EXTERNAL
+        // Imgproc.RETR_FLOODFILL
+      }
       pg_obstacles.stroke(64);
       pg_obstacles.strokeWeight(10);
       //pg_obstacles.noFill();
@@ -352,9 +367,13 @@ public void draw() {
   if (showObstacles) {
     image(pg_obstacles, 0, 0);
   }
-
-  ps.show();
-
+  if (USE_METABALLS) {
+    //mb.show();
+    fill(0, 180);
+    drawPolygons(contours, (PGraphics2D)this.g);
+  } else {
+    ps.show();
+  }
   //image(pg_metaball, 0, 0);
 
 
@@ -415,6 +434,10 @@ public void keyReleased() {
   if (key == 's') {
 
     mb.particles.add(new MetaballParticle(mouseX, mouseY));
+  }
+
+  if (key == 'M') {
+    USE_METABALLS = !USE_METABALLS;
   }
 }
 

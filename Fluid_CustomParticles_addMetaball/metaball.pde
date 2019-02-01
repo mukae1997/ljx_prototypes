@@ -5,10 +5,10 @@
  * @date 2016/06/25
  */
 class MetaBallTest {
-  int num = 8; // number of atom-blobs
+  int num = 3; // number of atom-blobs
   ArrayList<MetaballParticle> particles;
   int cellNum_w, cellNum_h;
-  float cellSize = 50;
+  float cellSize = 150;
   float[][] cells;
 
   PApplet PAppletContext;
@@ -272,5 +272,5 @@ class MetaballParticle {
 }
 
 void mouseReleased() {
-  //mb.particles.add(new MetaballParticle(mouseX, mouseY));
+  mb.particles.add(new MetaballParticle(mouseX, mouseY));
 }

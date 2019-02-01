@@ -25,8 +25,7 @@ void drawPolygons(ArrayList<MatOfPoint> contours, PGraphics2D pg) {
     //  } else {
     //    noFill();
     //  }
-
-    pg.fill(64);
+ 
     pg.beginShape();
     for (int i=0; i<pts.length; i++) {
       pg.vertex((float)pts[i].x, (float)pts[i].y);

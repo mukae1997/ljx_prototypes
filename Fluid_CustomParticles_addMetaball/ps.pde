@@ -79,6 +79,7 @@ class Particle3D {
 
   lifeStateTimer timer;
 
+  float BASE_R = 200;
 
   Particle3D(PVector p) {
     pos = p.copy();
@@ -185,7 +186,7 @@ class Particle3D {
     // stroke(255, map(i, 0, history.size(), 218, 6));
     // noFill();
     // point(0, 0, 0);
-    float r = 200*max(0.1, 1-timer.state);
+    float r = BASE_R*max(0.1, 1-timer.state);
     fill(0, 180);
     ellipse(0, 0, r, r);
 
@@ -228,7 +229,7 @@ class Particle3D {
       // stroke(255, map(i, 0, history.size(), 218, 6));
       // noFill();
       // point(0, 0, 0);
-      float r = 200 * max(0.1, 1-timer.state) + 2;
+      float r = BASE_R * max(0.1, 1-timer.state) + 2;
       pg.fill(64);
       pg.ellipse(0, 0, r, r);
 
