@@ -9,17 +9,18 @@
 
 
 import com.thomasdiewald.pixelflow.java.DwPixelFlow;
+import com.thomasdiewald.pixelflow.java.dwgl.DwGLTexture;
 import com.thomasdiewald.pixelflow.java.fluid.DwFluid2D;
+import com.thomasdiewald.pixelflow.java.imageprocessing.filter.DwFilter;
 
 import processing.core.*;
 import processing.opengl.PGraphics2D;
 
 
   // Basic example for texture data transfer
-  // It is quite costly to transfer data from the GPU-memory to Host memory.
-  // So its best to keep working with shaders and avoid this transfer as much
-  // as possible. However, sometimes it needs to be done.
 
+  DwPixelFlow context;
+  
   // fluid simulation
   DwFluid2D fluid;
   
@@ -27,19 +28,20 @@ import processing.opengl.PGraphics2D;
   PGraphics2D pg_fluid;
   
   public void settings() {
-    size(1200, 800, P2D);
+    size(600, 600, P2D);
   }
   
+    int fluid_gridscale = 3;
   public void setup() {
        
     // library context
-    DwPixelFlow context = new DwPixelFlow(this);
+    context = new DwPixelFlow(this);
     context.print();
     context.printGL();
     System.out.println("Example: "+this.getClass().getSimpleName());
     
     // fluid simulation
-    fluid = new DwFluid2D(context, width, height, 1);
+    fluid = new DwFluid2D(context, width, height, fluid_gridscale);
     
     // some fluid parameters
     fluid.param.dissipation_velocity = 0.90f;
@@ -73,7 +75,8 @@ import processing.opengl.PGraphics2D;
     frameRate(60);
   }
   
-  // array is allocated automatically
+  
+  DwGLTexture tex_vel_small;
   float[] data_vel;
 
   public void draw() {    
@@ -81,12 +84,23 @@ import processing.opengl.PGraphics2D;
     // update simulation
     fluid.update();
     
+    int grid_points = 20;
+    
+    if(tex_vel_small == null){
+      tex_vel_small = fluid.tex_velocity.src.createEmtpyCopy();
+      tex_vel_small.resize(context, grid_points, grid_points);
+    }
+    
+    DwFilter.get(context).copy.apply(fluid.tex_velocity.src, tex_vel_small);
+    
     // transfer velocity frame
-    data_vel = fluid.getVelocity(data_vel);
+    context.begin();
+    data_vel = tex_vel_small.getFloatTextureData(data_vel);
+    context.end();
+
     
     // draw velocity vectors
     float vel_mult = 2;
-    int grid_points = 20;
     float grid_space = fluid.fluid_w / (float)(grid_points + 1);
 
     beginShape(LINES);
@@ -97,10 +111,8 @@ import processing.opengl.PGraphics2D;
         
         float gx_pos1 = grid_space + gx * grid_space;
         float gy_pos1 = grid_space + gy * grid_space;
-        
-        int gx_fluid = round(gx_pos1);
-        int gy_fluid = round(fluid.fluid_h - 1 - gy_pos1);
-        int gid_fluid = gy_fluid * fluid.fluid_w + gx_fluid; // inverted y-coord
+
+        int gid_fluid = (grid_points - 1 - gy) * tex_vel_small.w + gx; // inverted y-coord
         
         float vel_x = data_vel[gid_fluid * 2 + 0];
         float vel_y = data_vel[gid_fluid * 2 + 1];

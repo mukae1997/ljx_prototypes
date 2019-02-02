@@ -22,7 +22,7 @@ import controlP5.Toggle;
 import processing.core.*;
 import processing.opengl.PGraphics2D;
 import processing.opengl.PJOGL;
-
+import com.thomasdiewald.pixelflow.java.imageprocessing.filter.DwFilter;
 
 // Fluid_CustomParticles show how to setup a completely customized particle
 // system that is interacting with the fluid simulation.
@@ -39,16 +39,21 @@ import processing.opengl.PJOGL;
 
 
 
+
+// array is allocated automatically
+float[] data_vel;
+float vscale = 30;
+
 private class MyFluidData implements DwFluid2D.FluidData {
 
   // update() is called during the fluid-simulation update step.
   @Override
     public void update(DwFluid2D fluid) {
 
-    float px, py, vx, vy, radius, vscale, temperature;
+    float px, py, vx, vy, radius, temperature;
 
-    radius = 15;
-    vscale = 30;
+    radius = 100;
+    //vscale = 30;
     px     = width/2;
     py     = 50;
     vx     = 1 * +vscale;
@@ -61,50 +66,72 @@ private class MyFluidData implements DwFluid2D.FluidData {
     // customize emitters
 
     ArrayList<PVector> poses = new ArrayList<PVector>();
-    float border = 100;
-    poses.add(new PVector(border, border));
-    poses.add(new PVector(width - border, border));
-    poses.add(new PVector(border, height - border));
-    poses.add(new PVector(width - border, height - border));
+    float border = 200;
+    if (false) {
+      poses.add(new PVector(width/3 + border * cos(frameCount * 0.05), 
+        height/2 +  border * sin(frameCount * 0.05)));
+
+      poses.add(new PVector(width*0.6 + border * cos(frameCount * 0.05 + 5), 
+        height/2 +   1 * sin(frameCount * 0.05 + 5)));
+      poses.add(new PVector(width*0.6 + border * cos(frameCount * 0.05 + 15), 
+        height/2 +   1 * sin(frameCount * 0.05 + 5)));
+      poses.add(new PVector(width*0.6 + border * cos(frameCount * 0.05 + 25), 
+        height/2 +   1 * sin(frameCount * 0.05 + 5)));
+    }
+    if (!false) {
+      poses.add(new PVector(border, border));
+      poses.add(new PVector(width - border, border));
+      poses.add(new PVector(border, height - border));
+      poses.add(new PVector(width - border, height - border));
 
 
-    poses.add(new PVector(width/2, border));
-    poses.add(new PVector(width/2, height - border));
-    poses.add(new PVector(border, height/2));
-    poses.add(new PVector(width - border, height/2));
+      poses.add(new PVector(width/2, border));
+      poses.add(new PVector(width/2, height - border));
+      poses.add(new PVector(border, height/2));
+      poses.add(new PVector(width - border, height/2));
 
 
-    poses.add(new PVector(width/2 - 200, height/2));
-    poses.add(new PVector(width/2 + 200, height/2));
+      poses.add(new PVector(width/2 - 200, height/2));
+      poses.add(new PVector(width/2 + 200, height/2));
+    }
 
     ArrayList<PVector> vels = new ArrayList<PVector>();
-    vels.add(new PVector(1, 1).mult(vscale));
-    vels.add(new PVector(-1, 1).mult(vscale));
-    vels.add(new PVector(1, -1).mult(vscale));
-    vels.add(new PVector(-1, -1).mult(vscale));
+    if (false) {
+      vels.add(PVector.random2D().mult(vscale));
+      vels.add(PVector.random2D().mult(vscale));
+      vels.add(PVector.random2D().mult(vscale));
+      vels.add(PVector.random2D().mult(vscale));
+    }
+    float t = frameCount * 0.05;
+    if (!false) {
+      vels.add(new PVector(cos(t), -sin(t)).mult(vscale));
+      vels.add(new PVector(-cos(t), -sin(t)).mult(vscale));
+      vels.add(new PVector(cos(t), -sin(t)).mult(vscale));
+      vels.add(new PVector(-cos(t), -sin(t)).mult(vscale));
 
 
-    vels.add(new PVector(0, 1).mult(vscale));
-    vels.add(new PVector(0, -1).mult(vscale));
-    vels.add(new PVector(1, 0).mult(vscale));
-    vels.add(new PVector(-1, 0).mult(vscale));
+      vels.add(new PVector(0, -1).mult(vscale));
+      vels.add(new PVector(0, -1).mult(vscale));
+      vels.add(new PVector(1, 0).mult(vscale));
+      vels.add(new PVector(-1, 0).mult(vscale));
 
 
-    vels.add(new PVector(-1, 1).mult(vscale));
-    vels.add(new PVector(1, -1).mult(vscale));
-
+      vels.add(new PVector(-1, -1).mult(vscale));
+      vels.add(new PVector(1, -1).mult(vscale));
+    }
 
     for (int i = 0; i < poses.size(); i++) {
-      PVector p = poses.get(i);
+      PVector p = poses.get(i); 
       float local_px = p.x, local_py = p.y;
       PVector v = vels.get(i).copy();
-      p.mult(noise(frameCount*0.03));
-      v.mult(5*sin(frameCount*0.05+i)+3*cos(frameCount*0.02+i));
+      //v.x += 10*vscale*sin(frameCount*0.05+i);
+      //v.y +=  vscale*cos(frameCount*0.05+i);
+
       fluid.addVelocity(local_px, local_py, radius, v.x, v.y);
       fluid.addDensity(local_px, local_py, radius, 0.2f, 0.3f, 0.5f, 1.0f);
       fluid.addTemperature(local_px, local_py, radius, temperature);
 
-      particles.spawn(fluid, local_px, local_py, radius, 200); // default spawn
+      particles.spawn(fluid, local_px, local_py, radius, 100); // default spawn
     }
 
 
@@ -190,12 +217,12 @@ MyParticleSystem particles;
 // some state variables for the GUI/display
 int     BACKGROUND_COLOR           = 0;
 boolean UPDATE_FLUID               = true;
-boolean DISPLAY_FLUID_TEXTURES     = false;
+boolean DISPLAY_FLUID_TEXTURES     = true;
 boolean DISPLAY_FLUID_VECTORS      = false;
 int     DISPLAY_fluid_texture_mode = 0;
 boolean DISPLAY_PARTICLES          = true;
 
-boolean showObstacles = true;
+boolean showObstacles = !true;
 
 
 public void settings() {
@@ -208,7 +235,7 @@ public void settings() {
   println(Core.VERSION);
 }
 
-
+DwPixelFlow context; 
 
 public void setup() {
   ps = new Particle3DSystem(0, new PVector(0, 0, 0));
@@ -220,7 +247,7 @@ public void setup() {
   surface.setLocation(viewport_x, viewport_y);
 
   // main library context
-  DwPixelFlow context = new DwPixelFlow(this);
+  context = new DwPixelFlow(this);
   context.print();
   context.printGL();
 
@@ -234,7 +261,8 @@ public void setup() {
   fluid.param.vorticity               = 0.10f;
 
   // ------------- my modify -------------
-  fluid.param.timestep = 0.39f; // playwithit
+  //fluid.param.num_jacobi_projection = 67;
+  fluid.param.timestep = 0.48;
   // ------------- my modify -------------
 
 
@@ -283,6 +311,8 @@ public void setup() {
 
 
 
+DwGLTexture tex_vel_small;
+
 public void draw() { 
 
 
@@ -310,10 +340,10 @@ public void draw() {
       if (frameCount % 60 == 0) 
         println(ps.cles.size());
 
-      if (mousePressed && frameCount % 2 == 0) {
+      if (mousePressed && frameCount % 1 == 0) {
         PVector p = new PVector(mouseX, mouseY, 0);
-        p.add(PVector.random2D().mult(50));
-        ps.addParticles(1, p);
+        p.add(PVector.random2D().mult(20));
+        ps.addParticles(2, p);
       }
     }
 
@@ -358,6 +388,51 @@ public void draw() {
     fluid.addObstacles(pg_obstacles);
     fluid.update();
     particles.update(fluid);
+
+    ////////////////////////////////////////////////
+    // data transfer(some problem; not well adapted)
+
+    int grid_points = 20;
+
+    if (tex_vel_small == null) {
+      tex_vel_small = fluid.tex_velocity.src.createEmtpyCopy();
+      tex_vel_small.resize(context, grid_points, grid_points);
+    }
+
+    DwFilter.get(context).copy.apply(fluid.tex_velocity.src, tex_vel_small);
+
+    // transfer velocity frame
+    context.begin();
+    data_vel = tex_vel_small.getFloatTextureData(data_vel);
+    context.end();
+
+
+    // draw velocity vectors
+    float vel_mult = 2;
+    float grid_space = fluid.fluid_w / (float)(grid_points + 1);
+
+    beginShape(LINES);
+    strokeWeight(1);
+    stroke(255);
+    for (int gy = 0; gy < grid_points; gy++) {
+      for (int gx = 0; gx < grid_points; gx++) {
+
+        float gx_pos1 = grid_space + gx * grid_space;
+        float gy_pos1 = grid_space + gy * grid_space;
+
+        int gid_fluid = (grid_points - 1 - gy) * tex_vel_small.w + gx; // inverted y-coord
+
+        float vel_x = data_vel[gid_fluid * 2 + 0];
+        float vel_y = data_vel[gid_fluid * 2 + 1];
+
+        float gx_pos2 = gx_pos1 + vel_x * vel_mult;
+        float gy_pos2 = gy_pos1 - vel_y * vel_mult; // inverted y-velocity
+
+        vertex(gx_pos1, gy_pos1);
+        vertex(gx_pos2, gy_pos2);
+      }
+    }
+    endShape();
   }
 
   // clear render target
@@ -393,7 +468,13 @@ public void draw() {
     fill(0, 180);
     drawPolygons(contours, (PGraphics2D)this.g);
   } else {
+    pushStyle();
+    noStroke();
+
+    fill(BACKGROUND_COLOR, 180);
+
     ps.show();
+    popStyle();
   }
   //image(pg_metaball, 0, 0);
 
@@ -565,17 +646,32 @@ public void createGUI() {
     px = 10; 
     py = 15;
 
-    cp5.addSlider("PARTICLE_SIZE").setGroup(group_custom).setSize(sx, sy).setPosition(px, py)
+    cp5.addSlider("point_size").setGroup(group_custom).setSize(sx, sy).setPosition(px, py)
       .setRange(0, 20).setValue(particles.point_size).plugTo(particles, "point_size");
 
 
     cp5.addSlider("OBSTACLE_CIRCLE_SIZE").setGroup(group_custom).setSize(sx, sy).setPosition(px, py += oy)
       .setRange(5, 500).setValue( ps.BASE_R ).plugTo(ps, "BASE_R");
-      
-      
+
+
     cp5.addSlider("beyondScreenBorder").setGroup(group_custom).setSize(sx, sy).setPosition(px, py += oy)
       .setRange(-300, 300).setValue( beyondScreenBorder );
-      
+
+
+    cp5.addSlider("vscale").setGroup(group_custom).setSize(sx, sy).setPosition(px, py += oy)
+      .setRange(1, 50).setValue( vscale );
+
+
+    //cp5.addSlider("PARTICLE_COL_H").setGroup(group_custom).setSize(sx, sy).setPosition(px, py += oy)
+    //  .setRange(0,1).setValue( particles.particle_color_h ).plugTo(ps, "particle_color_h");
+
+
+    //cp5.addSlider("PARTICLE_COL_S").setGroup(group_custom).setSize(sx, sy).setPosition(px, py += oy)
+    //  .setRange(0,1).setValue( particles.particle_color_s ).plugTo(ps, "particle_color_s");
+
+
+    //cp5.addSlider("PARTICLE_COL_B").setGroup(group_custom).setSize(sx, sy).setPosition(px, py += oy)
+    //  .setRange(0,1).setValue( particles.particle_color_b ).plugTo(ps, "particle_color_b");
   }
 
   ////////////////////////////////////////////////////////////////////////////

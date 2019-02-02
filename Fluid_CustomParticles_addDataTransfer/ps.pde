@@ -2,7 +2,7 @@ class Particle3DSystem {
   PVector pos;
   ArrayList<Particle3D> cles;
   
-  public float BASE_R = 90;
+  public float BASE_R = 80;
 
   Particle3DSystem(int _c, PVector p) {
 
@@ -190,8 +190,7 @@ class Particle3D {
     // stroke(255, map(i, 0, history.size(), 218, 6));
     // noFill();
     // point(0, 0, 0);
-    float r = BASE_R*max(0.1, 1-timer.state);
-    fill(0, 180);
+    float r = getR();
     ellipse(0, 0, r, r);
 
     popMatrix();
@@ -220,6 +219,10 @@ class Particle3D {
   //    println(e);
   //  }
   //}
+  
+  float getR() {
+    return BASE_R * max(0.1, 1-timer.state) + 2;
+  }
 
 
   void show(PGraphics2D pg) { 
@@ -233,7 +236,7 @@ class Particle3D {
       // stroke(255, map(i, 0, history.size(), 218, 6));
       // noFill();
       // point(0, 0, 0);
-      float r = BASE_R * max(0.1, 1-timer.state) + 2;
+      float r = getR();
       pg.fill(64);
       pg.ellipse(0, 0, r, r);
 
