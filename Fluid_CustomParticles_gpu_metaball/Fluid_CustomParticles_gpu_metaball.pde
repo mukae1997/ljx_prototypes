@@ -38,153 +38,18 @@ import com.thomasdiewald.pixelflow.java.imageprocessing.filter.DwFilter;
 // RMB: add Particles
 
 
-
-
-// array is allocated automatically
-float[] data_vel;
-float vscale = 30;
-
-private class MyFluidData implements DwFluid2D.FluidData {
-
-  // update() is called during the fluid-simulation update step.
-  @Override
-    public void update(DwFluid2D fluid) {
-
-    float px, py, vx, vy, radius, temperature;
-
-    radius = 100;
-    //vscale = 30;
-    px     = width/2;
-    py     = 50;
-    vx     = 1 * +vscale;
-    vy     = 1 *  vscale;
-    radius = 40;
-    temperature = 1f;
-
-    // ----------- my modify ----------
-
-    // customize emitters
-
-    ArrayList<PVector> poses = new ArrayList<PVector>();
-    float border = 200;
-    if (false) {
-      poses.add(new PVector(width/3 + border * cos(frameCount * 0.05), 
-        height/2 +  border * sin(frameCount * 0.05)));
-
-      poses.add(new PVector(width*0.6 + border * cos(frameCount * 0.05 + 5), 
-        height/2 +   1 * sin(frameCount * 0.05 + 5)));
-      poses.add(new PVector(width*0.6 + border * cos(frameCount * 0.05 + 15), 
-        height/2 +   1 * sin(frameCount * 0.05 + 5)));
-      poses.add(new PVector(width*0.6 + border * cos(frameCount * 0.05 + 25), 
-        height/2 +   1 * sin(frameCount * 0.05 + 5)));
-    }
-    if (!false) {
-      poses.add(new PVector(border, border));
-      poses.add(new PVector(width - border, border));
-      poses.add(new PVector(border, height - border));
-      poses.add(new PVector(width - border, height - border));
-
-
-      poses.add(new PVector(width/2, border));
-      poses.add(new PVector(width/2, height - border));
-      poses.add(new PVector(border, height/2));
-      poses.add(new PVector(width - border, height/2));
-
-
-      poses.add(new PVector(width/2 - 200, height/2));
-      poses.add(new PVector(width/2 + 200, height/2));
-    }
-
-    ArrayList<PVector> vels = new ArrayList<PVector>();
-    if (false) {
-      vels.add(PVector.random2D().mult(vscale));
-      vels.add(PVector.random2D().mult(vscale));
-      vels.add(PVector.random2D().mult(vscale));
-      vels.add(PVector.random2D().mult(vscale));
-    }
-    float t = frameCount * 0.05;
-    if (!false) {
-      vels.add(new PVector(cos(t), -sin(t)).mult(vscale));
-      vels.add(new PVector(-cos(t), -sin(t)).mult(vscale));
-      vels.add(new PVector(cos(t), -sin(t)).mult(vscale));
-      vels.add(new PVector(-cos(t), -sin(t)).mult(vscale));
-
-
-      vels.add(new PVector(0, -1).mult(vscale));
-      vels.add(new PVector(0, -1).mult(vscale));
-      vels.add(new PVector(1, 0).mult(vscale));
-      vels.add(new PVector(-1, 0).mult(vscale));
-
-
-      vels.add(new PVector(-1, -1).mult(vscale));
-      vels.add(new PVector(1, -1).mult(vscale));
-    }
-
-    for (int i = 0; i < poses.size(); i++) {
-      PVector p = poses.get(i); 
-      float local_px = p.x, local_py = p.y;
-      PVector v = vels.get(i).copy();
-      //v.x += 10*vscale*sin(frameCount*0.05+i);
-      //v.y +=  vscale*cos(frameCount*0.05+i);
-
-      fluid.addVelocity(local_px, local_py, radius, v.x, v.y);
-      fluid.addDensity(local_px, local_py, radius, 0.2f, 0.3f, 0.5f, 1.0f);
-      fluid.addTemperature(local_px, local_py, radius, temperature);
-
-      particles.spawn(fluid, local_px, local_py, radius, 100); // default spawn
-    }
-
-
-    // ----------- my modify ----------
-
-    boolean mouse_input = !cp5.isMouseOver() && mousePressed;
-
-    // add impulse: density + velocity, particles
-    if (mouse_input && mouseButton == LEFT && false) {
-      radius = 15;
-      vscale = 15;
-      px     = mouseX;
-      py     = height-mouseY;
-      vx     = (mouseX - pmouseX) * +vscale;
-      vy     = (mouseY - pmouseY) * -vscale;
-      fluid.addDensity (px, py, radius, 0.25f, 0.0f, 0.1f, 1.0f);
-      fluid.addVelocity(px, py, radius, vx, vy);
-      particles.spawn(fluid, px, py, radius*2, 300);
-    }
-
-    // add impulse: density + temperature, particles
-    if (mouse_input && mouseButton == CENTER) {
-      radius = 15;
-      vscale = 15;
-      px     = mouseX;
-      py     = height-mouseY;
-      temperature = 2f;
-      fluid.addDensity(px, py, radius, 0.25f, 0.0f, 0.1f, 1.0f);
-      fluid.addTemperature(px, py, radius, temperature);
-      particles.spawn(fluid, px, py, radius, 100);
-    }
-
-    // particles
-    if (mouse_input && mouseButton == RIGHT) {
-      px     = mouseX;
-      py     = height - 1 - mouseY; // invert
-      radius = 50;
-      particles.spawn(fluid, px, py, radius, 300);
-    }
-  }
-}
-
 // -------------------------------------
 // -------------------------------------
 // ------------- my modify -------------
 
-MetaBallTest mb;
-Particle3DSystem ps;
 
-boolean USE_METABALLS = !true;
+boolean USE_METABALLS = true;
 
+PShader metaballShader;
+MetaballParticleSystem mbps;
 CVImage img;
 
+Particle3DSystem ps;
 ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
 float beyondScreenBorder = 80;
@@ -238,8 +103,13 @@ public void settings() {
 DwPixelFlow context; 
 
 public void setup() {
+
+
   ps = new Particle3DSystem(0, new PVector(0, 0, 0));
-  mb = new MetaBallTest(this);
+  mbps = new MetaballParticleSystem(); 
+
+  metaballShader = loadShader("metaballFrag.glsl", "metaballVert.glsl");
+
 
   img = new CVImage(viewport_w, viewport_h);
 
@@ -320,20 +190,6 @@ public void draw() {
   // update simulation
   if (UPDATE_FLUID) {
     if (USE_METABALLS) {
-      pg_metaball.beginDraw();
-      pg_metaball.clear();
-      pg_metaball.background(0);
-
-      float radius;
-      radius = 200; 
-
-      //pg_obstacles.stroke(64);
-      //pg_obstacles.strokeWeight(10);
-      //pg_obstacles.noFill();
-      //pg_obstacles.rect(1*width/2f, 1*height/4f, radius, radius, 20);
-      pg_metaball.stroke(255);
-      drawMetaBalls(pg_metaball); 
-      pg_metaball.endDraw();
     } else {
 
       ps.update();
@@ -347,43 +203,32 @@ public void draw() {
       }
     }
 
-    img.copyTo( pg_metaball.get() ); // for opencv use
-
     // rendering obstacles
+    if (frameCount % 1 == 0) { 
+      pg_obstacles.beginDraw(); 
+      pg_obstacles.clear();
+      if (USE_METABALLS) {
 
-    pg_obstacles.beginDraw(); 
-    pg_obstacles.clear();
-    if (USE_METABALLS) {
-      if (frameCount % 1 == 0) { // reduce update by CV
-        Mat hierarchy = new Mat();
-        Imgproc.findContours(img.getGrey(), contours, hierarchy, 
-          Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-        // Imgproc.RETR_EXTERNAL
-        // Imgproc.RETR_FLOODFILL
+        mbps.update();
+        mbps.render(pg_obstacles);
+      } else {
+
+        ps.show(pg_obstacles);
       }
-      pg_obstacles.stroke(64);
-      pg_obstacles.strokeWeight(10);
+      //pg_obstacles.stroke(64);
+      //pg_obstacles.strokeWeight(10);
       //pg_obstacles.noFill();
+      //pg_obstacles.rect(mouseX, mouseY, 100, 100);
 
-      drawPolygons(contours, pg_obstacles);
-    } else {
+      // border-obstacle
 
-      ps.show(pg_obstacles);
+      pg_obstacles.strokeWeight(20);
+      pg_obstacles.stroke(64);
+      pg_obstacles.noFill();
+      pg_obstacles.rect(0 - beyondScreenBorder, 0 - beyondScreenBorder, 
+        pg_obstacles.width + beyondScreenBorder, pg_obstacles.height + beyondScreenBorder);
+      pg_obstacles.endDraw();
     }
-    //pg_obstacles.stroke(64);
-    //pg_obstacles.strokeWeight(10);
-    //pg_obstacles.noFill();
-    //pg_obstacles.rect(mouseX, mouseY, 100, 100);
-
-    // border-obstacle
-
-    pg_obstacles.strokeWeight(20);
-    pg_obstacles.stroke(64);
-    pg_obstacles.noFill();
-    pg_obstacles.rect(0 - beyondScreenBorder, 0 - beyondScreenBorder, 
-      pg_obstacles.width + beyondScreenBorder, pg_obstacles.height + beyondScreenBorder);
-    pg_obstacles.endDraw();
-
 
     fluid.addObstacles(pg_obstacles);
     fluid.update();
@@ -445,11 +290,12 @@ public void draw() {
   if (DISPLAY_FLUID_TEXTURES) {
     // render: density (0), temperature (1), pressure (2), velocity (3)
     fluid.renderFluidTextures(pg_fluid, DISPLAY_fluid_texture_mode);
-  }
+    
+  } 
 
   if (DISPLAY_FLUID_VECTORS) {
     // render: velocity vector field
-    fluid.renderFluidVectors(pg_fluid, 10);
+    //fluid.renderFluidVectors(pg_fluid, 10);
   }
 
   if ( DISPLAY_PARTICLES) {
@@ -462,20 +308,23 @@ public void draw() {
   image(pg_fluid, 0, 0);
   if (showObstacles) {
     image(pg_obstacles, 0, 0);
-  }
-  if (USE_METABALLS) {
-    //mb.show();
-    fill(0, 180);
-    drawPolygons(contours, (PGraphics2D)this.g);
-  } else {
-    pushStyle();
-    noStroke();
 
-    fill(BACKGROUND_COLOR, 180);
+    if (USE_METABALLS) {
+      //mb.show();
+      fill(0, 180);
+      mbps.render(this.g);
+      //drawPolygons(contours, (PGraphics2D)this.g);
+    } else {
+      pushStyle();
+      noStroke();
 
-    ps.show();
-    popStyle();
+      fill(BACKGROUND_COLOR, 180);
+
+      ps.show();
+      popStyle();
+    }
   }
+
   //image(pg_metaball, 0, 0);
 
 
@@ -532,13 +381,9 @@ public void keyReleased() {
 
   if (key == 'q') DISPLAY_FLUID_TEXTURES = !DISPLAY_FLUID_TEXTURES;
   if (key == ' ') showObstacles = !showObstacles;
-  if (key == 'w') DISPLAY_FLUID_VECTORS  = !DISPLAY_FLUID_VECTORS;
-  if (key == 's') {
+  if (key == 'w') DISPLAY_FLUID_VECTORS  = !DISPLAY_FLUID_VECTORS; 
 
-    mb.particles.add(new MetaballParticle(mouseX, mouseY));
-  }
-
-  if (key == 'M') {
+  if (key == 'm') {
     USE_METABALLS = !USE_METABALLS;
   }
 }
@@ -660,8 +505,13 @@ public void createGUI() {
 
     cp5.addSlider("vscale").setGroup(group_custom).setSize(sx, sy).setPosition(px, py += oy)
       .setRange(1, 50).setValue( vscale );
+      
+    
 
-
+    checkbox =  cp5.addCheckBox("checkBox").setGroup(group_custom)
+      .setSize(40, 40)
+      .setPosition(px, py += oy)
+      .addItem("USE_METABALL", 0);
     //cp5.addSlider("PARTICLE_COL_H").setGroup(group_custom).setSize(sx, sy).setPosition(px, py += oy)
     //  .setRange(0,1).setValue( particles.particle_color_h ).plugTo(ps, "particle_color_h");
 
@@ -683,4 +533,18 @@ public void createGUI() {
     .addItem(group_display)
     .addItem(group_custom)
     .open(4);
+}
+
+import controlP5.*;
+CheckBox checkbox;
+
+
+void controlEvent(ControlEvent theEvent) {
+  if (theEvent.isFrom(checkbox)) {  
+    // checkbox uses arrayValue to store the state of 
+    // individual checkbox-items. usage:
+
+    USE_METABALLS = !(checkbox.getArrayValue()[0] < 1);
+    println(USE_METABALLS);
+  }
 }

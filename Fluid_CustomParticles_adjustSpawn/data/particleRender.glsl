@@ -84,7 +84,7 @@ void main(){
 
   float len = length(particle.zw) * 0.035;
 //  glFragColor = vec4(len, 0.5, 1-len, len * 0.5 + 0.5); // default
-  glFragColor = vec4(czm_HSBToRGB(vec3(217.0/360.0,  0.28, 0.99)), len * 0.5 + 0.5); // custom
+  glFragColor = vec4(czm_HSBToRGB(vec3(217.0/360.0,  0.733, 0.99)), len * 0.5 + 0.5); // custom
   glFragColor.a *= falloff;
 }
 

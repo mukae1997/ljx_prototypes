@@ -7,6 +7,40 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "Fluid_CustomParticles_addMetaball/util.pde",
+			"settings":
+			{
+				"buffer_size": 772,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Fluid_CustomParticles_addMetaball/MyParticleSystem.pde",
+			"settings":
+			{
+				"buffer_size": 7119,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Fluid_CustomParticles_addMetaball/metaball.pde",
+			"settings":
+			{
+				"buffer_size": 9166,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Fluid_CustomParticles_addMetaball/ps.pde",
+			"settings":
+			{
+				"buffer_size": 6026,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -19,6 +53,22 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"jv",
+				"Set Syntax: Java"
+			],
+			[
+				"ja",
+				"Set Syntax: Java"
+			],
+			[
+				"jav",
+				"Set Syntax: Java"
+			],
+			[
+				"java",
+				"Set Syntax: Java"
+			],
 			[
 				"install p",
 				"Package Control: Install Package"
@@ -52,10 +102,13 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/macbookpro/作品集/linjiangxian/prototype_0"
+		"/Users/macbookpro/作品集/linjiangxian/prototype_0",
+		"/Users/macbookpro/作品集/linjiangxian/prototype_0/Fluid_CustomParticles_addMetaball"
 	],
 	"file_history":
 	[
+		"/Users/macbookpro/作品集/linjiangxian/prototype_0/Fluid_CustomParticles_addMetaball/Fluid_CustomParticles_addMetaball.pde",
+		"/Users/macbookpro/作品集/linjiangxian/prototype_0/aadebdeb_metaballs_mouse/aadebdeb_metaballs_mouse.pde",
 		"/Users/macbookpro/code/WebGL_Codes/yiwenl_WebGL_Particle_Stream/js/SceneFlowers.js",
 		"/Users/macbookpro/code/WebGL_Codes/yiwenl_WebGL_Particle_Stream/js/Index.js",
 		"/Users/macbookpro/code/WebGL_Codes/soulwire_WebGL-GPU-Particles/source/shaders/copy.fs",
@@ -85,7 +138,7 @@
 	],
 	"find":
 	{
-		"height": 54.0
+		"height": 26.0
 	},
 	"find_in_files":
 	{
@@ -99,6 +152,11 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"base",
+			"add",
+			"show",
+			"USE_METABALLS",
+			"USE_METABALLS\n"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -116,14 +174,135 @@
 	"groups":
 	[
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "Fluid_CustomParticles_addMetaball/util.pde",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 772,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								623,
+								623
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Java/Java.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "Fluid_CustomParticles_addMetaball/MyParticleSystem.pde",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7119,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1172,
+								1172
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Java/Java.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 365.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "Fluid_CustomParticles_addMetaball/metaball.pde",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9166,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								326,
+								326
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Java/Java.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "Fluid_CustomParticles_addMetaball/ps.pde",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6026,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1794,
+								1794
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Java/Java.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 880.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 28.0
+		"height": 26.0
 	},
 	"input":
 	{
@@ -160,7 +339,7 @@
 	"project": "untitled.sublime-project",
 	"replace":
 	{
-		"height": 52.0
+		"height": 48.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -169,6 +348,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"",
+				"aadebdeb_metaballs_mouse/aadebdeb_metaballs_mouse.pde"
+			]
 		],
 		"width": 0.0
 	},
@@ -198,7 +381,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 209.0,
+	"side_bar_width": 318.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
