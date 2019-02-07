@@ -1,5 +1,5 @@
-boolean OutOfScreen(PVector p) {
-  return (p.y > height-10) || p.y < 10 || p.x < 10 || p.x > width - 10;
+boolean OutOfScreen(PVector p, float border) {
+  return (p.y > height-border) || p.y < border || p.x < border || p.x > width - border;
 }
  
 

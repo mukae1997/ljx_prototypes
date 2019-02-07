@@ -319,7 +319,7 @@ public void draw() {
       PVector p = poses.get(i); 
       // debug 
       fill(255);
-      ellipse(p.x, p.y, 50,50);
+      ellipse(p.x, height - p.y, 50,50);
 
     }
     

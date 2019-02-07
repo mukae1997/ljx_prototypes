@@ -86,7 +86,7 @@ static public class MyParticleSystem {
     release(); // just in case its not the first resize call
 
     // ------------- my modify -------------
-    int REDUCE_FACTOR = 5; // MAX_PARTICLES will be divided by this number
+    int REDUCE_FACTOR = 4; // MAX_PARTICLES will be divided by this number
     // ------------- my modify -------------
     MAX_PARTICLES = particles_x * particles_y / REDUCE_FACTOR;
     System.out.println("ParticelSystem: texture size = "+particles_x+"/"+particles_y +" ("+MAX_PARTICLES+" particles)");

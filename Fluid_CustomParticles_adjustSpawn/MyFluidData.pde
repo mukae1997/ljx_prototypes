@@ -59,10 +59,11 @@ void initMyFluidDataControl() {
     vels.add(new PVector(1, -1).mult(vscale));
   }
 
-  for (int i = 0; i < EMITTER_NUMBER; i++) {
-    poses.add(new PVector(random(border, width-border), random(border, height-border)));
-    //vels.add(PVector.random2D().mult(vscale));
-  }
+  //for (int i = 0; i < EMITTER_NUMBER; i++) {
+  //  poses.add(new PVector(random(border, width-border), 
+  //    random(border, height-border)));
+  //  //vels.add(PVector.random2D().mult(vscale));
+  //}
 
   for (int i = 0; i < poses.size(); i++) {
     originalPoses.add(poses.get(i).copy());
@@ -81,7 +82,7 @@ private class MyFluidData implements DwFluid2D.FluidData {
     //vscale = 30;
     px     = width/2;
     py     = 50;
-    vx     = 1 * +vscale;
+    vx     = 1 * + vscale;
     vy     = 1 *  vscale;
     radius = 40;
     temperature = 1f;
@@ -90,20 +91,49 @@ private class MyFluidData implements DwFluid2D.FluidData {
 
     float t = frameCount * 0.05; 
 
+    float border = 120;
+
     for (int i = 0; i < poses.size(); i++) {
       PVector p = poses.get(i); 
-      PVector diff = PVector.sub(p, mousePos);
-      if (true||OutOfScreen(p)) {
-        p.add(PVector.sub(originalPoses.get(i), p).mult(0.01));
-      }
+
+      p.add(PVector.sub(originalPoses.get(i), p).mult(0.01));
+
+
+      PVector diff = new PVector(PVector.sub(p, mousePos).x, p.y - (height-mouseY));
 
       if (diff.mag() < DISTANCE_BOUND) {
         p.add(diff.mult(0.3));
       }
 
+      if (mousePressed && OutOfScreen(p, border)) {
+
+        if (p.x < border) {
+          //v.x *= -1;
+          p.x = width - border;
+        }
+        if (p.x >= width - border) {
+          //v.x *= -1;
+          p.x = border;
+        }
+        if (p.y < border) {
+          //v.y *= -1;
+          p.y = height - border;
+        }
+        if (p.y >= height - border) {
+          //v.y *= -1;
+          p.y = border;
+        }
+      }
+
       float local_px = p.x, local_py = p.y;
       //PVector v = vels.get(i).copy();
-      PVector v = new PVector(2*(noise(t, i)-0.5), 2*(noise(10*i, t)-0.5)).mult(vscale);
+      //PVector v = new PVector(2*(noise(t, i)-0.5), 
+      //  2*(noise(10*i, t)-0.5))
+      //  .mult(vscale);
+
+
+      PVector v = new PVector( 2*(noise(t, i)-0.5), -1)
+        .mult(vscale);
 
 
       //v.x += 10*vscale*sin(frameCount*0.05+i);

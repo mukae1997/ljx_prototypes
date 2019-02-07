@@ -68,7 +68,7 @@ class MetaballParticle {
   PVector loc, vel;
   float _lifespan_ = 8.0;
   
-  float RADIUS_UPPER_BOUND = 35;
+  float RADIUS_UPPER_BOUND = 28;
   
   MetaballParticle() {
     timer = new lifeStateTimer(_lifespan_);
