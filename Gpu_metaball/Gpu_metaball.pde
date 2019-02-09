@@ -22,6 +22,7 @@ void setup()
 }
 
 void draw() {   
+  background(200);
   mbps.update();
   mbps.render(this.g);
 }
