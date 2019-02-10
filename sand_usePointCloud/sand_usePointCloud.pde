@@ -14,7 +14,7 @@ ParticleSystem physics;
 PImage img, img2;
 boolean USE_IMG = false;
 void setup() {
-  size( 1000, 700, P2D );
+  size( 1400, 700, P2D );
   //cursor( CROSS );
   
   
@@ -28,7 +28,7 @@ void setup() {
   mouse = physics.makeParticle();
   mouse.makeFixed();
 
-  others = new Particle[40000];
+  others = new Particle[60000];
 
   for ( int i = 0; i < others.length; i++ ) {
     others[i] = physics.makeParticle( 1.0, random( 0, width ), random( 0, height ), 0 );
@@ -81,7 +81,7 @@ void draw() {
   
   
   fx.render() 
-    .bloom(0.5, 20, 30) // damage visual of black particle
+    .bloom(0.1, 13, 106) // damage visual of black particle
     .compose();
 }
 void keyPressed() {
