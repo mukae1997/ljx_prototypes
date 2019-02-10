@@ -6,6 +6,8 @@ import ch.bildspur.postfx.builder.*;
 import ch.bildspur.postfx.pass.*;
 import ch.bildspur.postfx.*;
 
+int particle_number = 40000;
+
 PostFX fx;
 Particle mouse;
 Particle[] others;
@@ -13,22 +15,30 @@ ParticleSystem physics;
 
 PImage img, img2;
 boolean USE_IMG = false;
+
+float[] rand;
+
 void setup() {
   size( 1400, 700, P2D );
   //cursor( CROSS );
-  
-  
+
+  rand = new float[5000];
+  for (int i = 0; i < 5000; i++) {
+    rand[i] = random(10)/10;
+  }
+
+
   fx = new PostFX(this);  
 
-  img = loadImage( "fade.png" );
-  img2 = loadImage( "fade2.png" );
+  img = loadImage( "line.png" );
+  img2 = loadImage( "line2.png" );
   imageMode( CORNER );
 
   physics = new ParticleSystem( 0, 0.1 );
   mouse = physics.makeParticle();
   mouse.makeFixed();
 
-  others = new Particle[60000];
+  others = new Particle[particle_number];
 
   for ( int i = 0; i < others.length; i++ ) {
     others[i] = physics.makeParticle( 1.0, random( 0, width ), random( 0, height ), 0 );
@@ -56,20 +66,25 @@ void draw() {
   }
   strokeWeight(1.0);
   for ( int i = 0; i < others.length; i++ ) {
+    pushMatrix();
     Particle p = others[i];
+    translate(p.position().x()-w/2, p.position().y()-w/2);
+    rotate(rand[i % rand.length]);
+
+
     if (USE_IMG) { 
       if (WHITE) {
 
         tint( 255, 41 );
-        image( img2, p.position().x()-w/2, p.position().y()-w/2);
+        image( img2, 0, 0);
       } else {
 
         tint( 12, 37 );
-        image( img, p.position().x()-w/2, p.position().y()-w/2);
+        image( img, 0, 0);
       }
     } else {
 
-      point(p.position().x(), p.position().y() );
+      point(0, 0);
     }
     if (p.position().x() > width || p.position().x() < 0) {
       p.position().setX(random(width));
@@ -77,12 +92,13 @@ void draw() {
     if (p.position().y() > height || p.position().y() < 0) {
       p.position().setY(random(height));
     }
+    popMatrix();
   }
-  
-  
-  fx.render() 
-    .bloom(0.1, 13, 106) // damage visual of black particle
-    .compose();
+
+
+  //fx.render() 
+  //  .bloom(0.1, 13, 106) // damage visual of black particle
+  //  .compose();
 }
 void keyPressed() {
   if (keyCode == ' ') {
