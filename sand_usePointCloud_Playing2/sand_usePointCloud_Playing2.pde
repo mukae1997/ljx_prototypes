@@ -32,7 +32,7 @@ float[] vy = new float[particle_number = 40000];
 
 void setup() {
 
-  size( 1700, 700, P2D );
+  size( 700, 700, P2D );
   //cursor( CROSS );
   background(0);
 
@@ -86,10 +86,11 @@ void draw() {
   if (spiral==false) {
     for ( int i = 0; i < others.length; i++ ) {
       pushMatrix();
-      Particle p = others[i];
+      Particle p = others[i];  
+
 
       //translate决定位置
-      //translate(p.position().x()-w/2, p.position().y()-w/2);
+      translate(p.position().x(), p.position().y());
       //rotate(rand[i % rand.length]);
       //println(i%rand.length);
 
@@ -123,7 +124,7 @@ void draw() {
           image( img, 0, 0);
         }
       } else {
-        point(p.position().x(), p.position().y());
+        point(0, 0);
       }
       if (p.position().x() > width || p.position().x() < 0) {
         p.position().setX(random(width));
@@ -134,18 +135,18 @@ void draw() {
       popMatrix();
     }
   } else {
-
+float t = frameCount * 0.015;
     for ( int i = 0; i < others.length; i++ ) {
       //rotate(rand[i % rand.length]);
       Particle p = others[i];
-      x[i]= p.position().x();
-      y[i]= p.position().y();
+      x[i] = p.position().x();
+      y[i] = p.position().y();
       float dx = mouseX - x[i];
       float dy = mouseY - y[i];
       float d = sqrt(dx*dx + dy*dy);
       if (d < 1) d = 1;
-      float f = sin(d * 0.04) * m[i] / d;
-      vx[i] = vx[i] * 0.5 + f * dx;
+      float f = sin(d * (0.04   )) * m[i] / d; 
+      vx[i] = vx[i] * 0.5 + f * dx; // dx+, vx +
       vy[i] = vy[i] * 0.5 + f * dy;
 
       x[i] += vx[i];
@@ -175,7 +176,8 @@ void draw() {
       }
 
 
-      point(x[i], y[i]);
+      point(p.position().x(), p.position().y());
+      //point(x[i], y[i]);
     }
   }
 

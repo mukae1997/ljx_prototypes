@@ -6,7 +6,7 @@ import ch.bildspur.postfx.builder.*;
 import ch.bildspur.postfx.pass.*;
 import ch.bildspur.postfx.*;
 
-int particle_number = 40000;
+int particle_number = 400;
 
 PostFX fx;
 Particle mouse;
@@ -31,7 +31,7 @@ void setup() {
   fx = new PostFX(this);  
 
   img = loadImage( "line.png" );
-  img2 = loadImage( "line2.png" );
+  img2 = loadImage( "fade2.png" );
   imageMode( CORNER );
 
   physics = new ParticleSystem( 0, 0.1 );
@@ -80,7 +80,7 @@ void draw() {
       } else {
 
         tint( 12, 37 );
-        image( img, 0, 0);
+        image( img, 0, 0, 3, 55);
       }
     } else {
 

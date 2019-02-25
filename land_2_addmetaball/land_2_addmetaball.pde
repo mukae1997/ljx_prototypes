@@ -23,7 +23,7 @@ PShader metaballShader;
 
 void setup()
 {
-  size(1000, 780, P3D);
+  size(1300, 780, P3D);
   smooth();
   fill(0);
 
@@ -133,6 +133,7 @@ void setup()
 
 void draw()
 {
+  blendMode(ADD);
   physics.tick();
   Vector3D mse = new Vector3D(mouseX, mouseY, 0);
 
@@ -159,7 +160,7 @@ void draw()
 
   background(21);
   strokeWeight(3.4);
-  stroke(244, 67);
+  stroke(244, 17);
   for (int i = 0; i < m; i++)
   {
     pushMatrix();

@@ -21,7 +21,7 @@ void main(){
     if (v > 1.0) {  
 //        float val = mod(min(10.0, v), 1.0);
 //        val = (cos(20/v) + 1.0 ) * 0.5;
-        gl_FragColor = vec4(vec3(v - 1.0),0.7);
+        gl_FragColor = vec4(vec3(v - 1.0),0.27);
     } else {
         gl_FragColor = vec4(0.0);
     }  
