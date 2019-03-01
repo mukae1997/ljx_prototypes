@@ -295,7 +295,7 @@ float getTwistValue(float x, float y) {
   avg /= n;
   if (minat < 0) minat += TWO_PI;
 
-  return noise(y*0.014,x*0.006) * TWO_PI * 1.76;
+  return noise(y*0.014,x*0.006) * TWO_PI * 1.76; 
   //return atan2(abs(y-cen.x), abs(x-cen.y));
 }
 PVector getCen(float t) {

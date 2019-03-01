@@ -8,7 +8,7 @@ PostFX fx;
 
 ParticleSystem physics;
 Particle[][] particles;
-int jn = 30;
+int jn = 40; // 横向绳子条数
 
 float SPRING_STRENGTH = 0.01;
 float SPRING_DAMPING = 0.1;
@@ -19,15 +19,29 @@ int m;
 MetaballParticleSystem mbps;
 
 PShader metaballShader;
+float[] rand;
+PVector[] rndvec;
 
+
+PVector mse = new PVector();
+PVector pmse = new PVector();
+
+rayParticleSystem raySys;
 
 void setup()
 {
-  size(900, 600, P3D);
+  //size(900, 600, P3D);
+  fullScreen(P3D);
   smooth();
   fill(0);
 
-  
+  rand = new float[5000]; 
+  rndvec = new PVector[5000];
+  for (int i = 0; i < 5000; i++) {
+    rand[i] = random(5);
+    rndvec[i] = PVector.random2D();
+  }
+
   fx = new PostFX(this);  
 
 
@@ -37,6 +51,8 @@ void setup()
   metaballShader = loadShader("metaballFrag.glsl", "metaballVert.glsl");
 
 
+  raySys = new rayParticleSystem(
+    new PVector(0, 0, 0));
 
   physics = new ParticleSystem(0.0, 0.06); 
 
@@ -91,8 +107,8 @@ void setup()
       q.makeFixed(); // used for resetting the curve to be straight line
 
       //physics.makeAttraction(q, p, 500, 5); // 并且给出一个attract关系
-      physics.makeSpring(q, p, SPRING_STRENGTH, SPRING_DAMPING, 
-        spring_looseness); // 并且给出一个attract关系
+      //physics.makeSpring(q, p, SPRING_STRENGTH, SPRING_DAMPING, 
+      //  spring_looseness); // 并且给出一个attract关系
     }
   }
   println("particles number "+physics.numberOfParticles());
@@ -102,8 +118,8 @@ void setup()
 
 
 
-  float interactive_strength = -4000;
-  float interactive_minimumDistance = 10;
+  float interactive_strength = -500;
+  float interactive_minimumDistance = 1;
   mAtrs = new Particle[METABALL_NUM];// 活动粒子
   for (int i = 0; i<mAtrs.length; i++) {
 
@@ -129,13 +145,20 @@ void setup()
 
   println("particles number "+physics.numberOfParticles());
   println("attractions number "+physics.numberOfAttractions());
+  mbps.update();
 }
 
 void draw()
 {
+
+  surface.setTitle(str(frameRate));
+  mse.set(mouseX, mouseY, 0);
+  if (frameCount % 60 == 0)
+    pmse.set(mouseX, mouseY, 0);
+
+
   blendMode(ADD);
   physics.tick();
-  Vector3D mse = new Vector3D(mouseX, mouseY, 0);
 
   for (int i = 0; i < mAtrs.length; i++) {
     MetaballParticle p = mbps.cles.get(i);
@@ -159,21 +182,31 @@ void draw()
   noFill();
 
   background(21);
-  strokeWeight(3.4);
   stroke(244, 17);
+
+  float t = frameCount * 0.074;
   for (int i = 0; i < m; i++)
   {
     pushMatrix();
-    for (int k = 0; k < 4; k++) {
-      translate(0, 3);
+    for (int k = 0; k < 3; k++) {
+      translate(0, rand[i]*1.9);
+      strokeWeight(0.5 + rand[i]*2.2);
 
       beginShape();
-      curveVertex(particles[i][0].position().x(), particles[i][0].position().y());
+      curveVertex(particles[i][0].position().x(), 
+        particles[i][0].position().y());
       for (int j = 0; j < jn; j++)
       {
-        curveVertex(particles[i][j].position().x(), particles[i][j].position().y());
+
+        float px = particles[i][j].position().x(), 
+          py = particles[i][j].position().y();
+
+        py += 2.9 * noise(py*0.0055 + px, t);
+
+        curveVertex(px, py);
       }
-      curveVertex(particles[i][jn - 1].position().x(), particles[i][jn - 1].position().y());
+      curveVertex(particles[i][jn - 1].position().x(), 
+        particles[i][jn - 1].position().y());
       endShape();
     }
 
@@ -188,18 +221,38 @@ void draw()
   {
     for (int j = 0; j < jn; j++)
     {
-      //point(particles[i][j].position().x(), particles[i][j].position().y());
+      //particles[i][j].position().setX(px); 
+      //particles[i][j].position().setY(py);
     }
   }
   popStyle();
 
   fill(255, 80);
+
+  if (canAddWhirl(pmse, mse)) {
+    raySys.emit(5, pmse, 
+      mse);
+    //println(raySys.raycles.size());
+  }
+  
+  
+  //for (rayParticle r : raySys.raycles) {
+  //  r.setTarget(mse);  // todo : set emitter mechanism
+  //}
+  
+  raySys.update();
+  raySys.show();
+
+
   mbps.update();
-  mbps.render(this.g);
-  
-  
-  
+  mbps.render(this.g);// must put last
+
+
   fx.render() 
     .bloom(0.1, 13, 106) // damage visual of black particle
     .compose();
 } 
+boolean canAddWhirl(PVector p1, PVector p2) {
+  if (PVector.dist(p1, p2) < 10 && frameCount % 1 == 0) return true;
+  return false;
+}

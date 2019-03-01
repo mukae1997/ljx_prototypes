@@ -1,7 +1,7 @@
 int METABALL_ATTR_LEN = 4; // don't modify
 
 
-int METABALL_NUM = 15;  // MUST modify 'metaballFrag.glsl' simultaneously!!
+int METABALL_NUM = 30;  // MUST modify 'metaballFrag.glsl' simultaneously!!
 
 
 
@@ -19,14 +19,21 @@ class MetaballParticleSystem {
       cles.add(new MetaballParticle());
     }
   }
+  MetaballParticle getNewCle() {
+
+    for (int i = 0; i < METABALL_NUM; i++) {
+      if (cles.get(i).isDead()) return cles.get(i);
+    }
+    return cles.get(ptr++%cles.size());
+  }
 
   void update() {
     for (int i = 0; i < cles.size(); i++) {
       cles.get(i).update();
     }
 
-    if (mousePressed) {
-      MetaballParticle mp = cles.get(ptr++%cles.size());
+    if (true) {
+      MetaballParticle mp = getNewCle();
       mp.loc.set(mouseX, mouseY);
       mp.timer.reset();
     }
@@ -67,13 +74,13 @@ class MetaballParticle {
   float radious;
   PVector loc, vel;
   float _lifespan_ = 1.0;
-  
-  float RADIUS_UPPER_BOUND = 30;
-  
+
+  float RADIUS_UPPER_BOUND = 20;
+
   MetaballParticle() {
     timer = new lifeStateTimer(_lifespan_);
     radious = random(RADIUS_UPPER_BOUND/3, RADIUS_UPPER_BOUND);
-    loc = new PVector(random(radious, width - radious), random(radious, height - radious));
+    loc = new PVector(0, 0);
     float velSize = random(2, 5);
     float velAng = random(TWO_PI);
     vel = new PVector(velSize * cos(velAng), velSize * sin(velAng));
@@ -107,6 +114,7 @@ class MetaballParticle {
       vel.y *= -1;
       loc.y += vel.y;
     }
+    vel.limit(2);
   }
 
   void update(float dt) {

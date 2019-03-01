@@ -8,7 +8,7 @@ PostFX fx;
 
 ParticleSystem physics;
 Particle[][] particles;
-int jn = 30;
+int jn = 40; // 横向绳子条数
 
 float SPRING_STRENGTH = 0.01;
 float SPRING_DAMPING = 0.1;
@@ -19,7 +19,8 @@ int m;
 MetaballParticleSystem mbps;
 
 PShader metaballShader;
-
+float[] rand;
+PVector[] rndvec;
 
 void setup()
 {
@@ -27,7 +28,13 @@ void setup()
   smooth();
   fill(0);
 
-  
+  rand = new float[5000]; 
+  rndvec = new PVector[5000];
+  for (int i = 0; i < 5000; i++) {
+    rand[i] = random(5);
+    rndvec[i] = PVector.random2D();
+  }
+
   fx = new PostFX(this);  
 
 
@@ -102,8 +109,8 @@ void setup()
 
 
 
-  float interactive_strength = -4000;
-  float interactive_minimumDistance = 10;
+  float interactive_strength = -500;
+  float interactive_minimumDistance = 1;
   mAtrs = new Particle[METABALL_NUM];// 活动粒子
   for (int i = 0; i<mAtrs.length; i++) {
 
@@ -129,10 +136,14 @@ void setup()
 
   println("particles number "+physics.numberOfParticles());
   println("attractions number "+physics.numberOfAttractions());
+  mbps.update();
 }
 
 void draw()
 {
+
+  surface.setTitle(str(frameRate));
+
   blendMode(ADD);
   physics.tick();
   Vector3D mse = new Vector3D(mouseX, mouseY, 0);
@@ -159,21 +170,31 @@ void draw()
   noFill();
 
   background(21);
-  strokeWeight(3.4);
   stroke(244, 17);
+
+  float t = frameCount * 0.074;
   for (int i = 0; i < m; i++)
   {
     pushMatrix();
-    for (int k = 0; k < 4; k++) {
-      translate(0, 3);
+    for (int k = 0; k < 3; k++) {
+      translate(0, rand[i]*1.9);
+      strokeWeight(0.5 + rand[i]*2.2);
 
       beginShape();
-      curveVertex(particles[i][0].position().x(), particles[i][0].position().y());
+      curveVertex(particles[i][0].position().x(), 
+        particles[i][0].position().y());
       for (int j = 0; j < jn; j++)
       {
-        curveVertex(particles[i][j].position().x(), particles[i][j].position().y());
+
+        float px = particles[i][j].position().x(), 
+          py = particles[i][j].position().y();
+
+        py += 2.9 * noise(py*0.0055 + px, t);
+
+        curveVertex(px, py);
       }
-      curveVertex(particles[i][jn - 1].position().x(), particles[i][jn - 1].position().y());
+      curveVertex(particles[i][jn - 1].position().x(), 
+        particles[i][jn - 1].position().y());
       endShape();
     }
 
@@ -188,7 +209,8 @@ void draw()
   {
     for (int j = 0; j < jn; j++)
     {
-      //point(particles[i][j].position().x(), particles[i][j].position().y());
+      //particles[i][j].position().setX(px); 
+      //particles[i][j].position().setY(py);
     }
   }
   popStyle();
@@ -196,9 +218,9 @@ void draw()
   fill(255, 80);
   mbps.update();
   mbps.render(this.g);
-  
-  
-  
+
+
+
   fx.render() 
     .bloom(0.1, 13, 106) // damage visual of black particle
     .compose();
