@@ -32,7 +32,7 @@ float[] vx = new float[particle_number];
 float[] vy = new float[particle_number];
 
 lifeStateTimer oscillTimer, expandTimer;
-MM mas;
+//MM mas;
 void setup() {
 
   size( 900, 700, P2D );
@@ -73,7 +73,7 @@ void setup() {
   mse = new PVector(mouseX, mouseY);
   pmse = new PVector(pmouseX, pmouseY);
 
-  mas = new MM(new PVector(width/2, height/2), 5);
+  //mas = new MM(new PVector(width/2, height/2), 5);
 }
 
 boolean WHITE = true;
@@ -126,11 +126,11 @@ void draw() {
   } else { 
     spiral = true;
   }
-  mas.steerTo(mse,4);
-  mas.update();
-  if (moverDEBUG) {
-    mas.show();
-  }
+  //mas.steerTo(mse, 4);
+  //mas.update();
+  //if (moverDEBUG) {
+  //  mas.show();
+  //}
   //if (canMakeAttraction()) {
   //  makeAttraction();
   //}
@@ -191,7 +191,11 @@ void draw() {
 
   {
 
-
+    /*
+按鼠标的时候会重启oscillTimer，
+     它用于实现一个点击鼠标时产生一个
+     震荡波（？）效果
+     */
 
     if (moused > 25 && oscillTimer.isDead()) {
       oscillTimer.reset();
@@ -199,7 +203,8 @@ void draw() {
 
     float t = frameCount * 0.011;
 
-    float oscillAmp = moused * 0.012;
+    // 这两个是震荡波的参数，控制最小幅度、震荡幅度
+    float oscillAmp = moused * 0.019;
     float oscillBase = 0.04 + 0.15 *(1-expandTimer.state);
 
     for ( int i = 0; i < others.length; i++ ) {
@@ -215,10 +220,13 @@ void draw() {
 
       if (at < 0) at+=TWO_PI;
       //at = pow(at, 2);
+      // twistRatio表示2种计算结果的混合比例
+      // twistRatio=0时就是原来的环形轨迹
+      // twistRatio = 1时完全是柏林噪声向量场
+      float twistRatio = 0.40;
+      d = lerp(d, d*at, twistRatio); 
 
-      d = lerp(d, d*at, 0.8);
-
-      float dfac = 0.22; // 调整线间距
+      float dfac = 0.22; // 我没看出来现在的算法下这个有什么用
       if (d < 1) d = 1;
       float f = sin(dfac * d * (oscillBase + oscillAmp * sin(TWO_PI*oscillTimer.state)   )) * m[i];
       f /= (d*1.0);
@@ -278,24 +286,31 @@ void draw() {
 
 float getTwistValue(float x, float y) {
 
-  PVector cen = getCen(frameCount * 0.01 * 0.05);
-  int n = mas.sms.size();
-  float avg = 0;
-  float mind = 10000, minat = 1;
-  for (int i = 0; i < n; i++ ) {
-    SM s = mas.sms.get(i);
-    float d = dist(s.pos.x, s.pos.y, x, y);
-    float at = atan2(y - s.pos.y, x - s.pos.x);
-    avg += d*0.01 * at;
-    if (mind > d) {
-      minat = at;
-      mind = d;
-    }
-  } 
-  avg /= n;
-  if (minat < 0) minat += TWO_PI;
+  //PVector cen = getCen(frameCount * 0.01 * 0.05);
+  //int n = mas.sms.size();
+  //float avg = 0;
+  //float mind = 10000, minat = 1;
+  //for (int i = 0; i < n; i++ ) {
+  //  SM s = mas.sms.get(i);
+  //  float d = dist(s.pos.x, s.pos.y, x, y);
+  //  float at = atan2(y - s.pos.y, x - s.pos.x);
+  //  avg += d*0.01 * at;
+  //  if (mind > d) {
+  //    minat = at;
+  //    mind = d;
+  //  }
+  //} 
+  //avg /= n;
+  //if (minat < 0) minat += TWO_PI;
 
-  return noise(y*0.014,x*0.006) * TWO_PI * 1.76; 
+
+
+  // 调整线间距,数值越大（噪声变化频率越高）间距越小
+  // 分 x y 方向调整
+  float yfreq_factor = 0.0140;
+  float xfreq_factor = 0.0060;
+  float unknown_factor =  1.73; // 我也忘了有什么用
+  return noise(y*yfreq_factor, x*xfreq_factor) * TWO_PI * unknown_factor; 
   //return atan2(abs(y-cen.x), abs(x-cen.y));
 }
 PVector getCen(float t) {
