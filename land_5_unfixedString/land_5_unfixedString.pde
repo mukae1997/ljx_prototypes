@@ -1,8 +1,15 @@
+/*
+按R去掉弹力
+按A加上弹力（但是去掉一次以后复原不会和开始一样）
+*/
+
 import traer.physics.*;
 
 import ch.bildspur.postfx.builder.*;
 import ch.bildspur.postfx.pass.*;
 import ch.bildspur.postfx.*;
+
+boolean isTriggerRemoveSpring = false;
 
 PostFX fx;
 
@@ -151,6 +158,8 @@ void setup()
   println("particles number "+physics.numberOfParticles());
   println("attractions number "+physics.numberOfAttractions());
   mbps.update();
+  
+  noCursor();
 }
 
 void draw()
@@ -159,6 +168,8 @@ void draw()
    会使该节点无法归位, 散开
    */
   //randomlyRemoveSpring(); 
+  
+  
 
   surface.setTitle(str(frameRate));
   mse.set(mouseX, mouseY, 0);
@@ -263,6 +274,13 @@ void draw()
   fx.render() 
     .bloom(0.1, 13, 106) // damage visual of black particle
     .compose();
+    
+    
+  if (isTriggerRemoveSpring) {
+    // 使得 removespring 最多生效一帧
+    addAllSprings();
+    isTriggerRemoveSpring = false;
+  }
 } 
 boolean canAddWhirl(PVector p1, PVector p2) {
   // 判定应不应该添加漩涡粒子

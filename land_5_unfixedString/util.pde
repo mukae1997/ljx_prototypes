@@ -24,6 +24,7 @@ void addAllSprings() {
       spring_looseness); // 并且给出一个attract关系
   }
 }
+
 void removeAllSprings() {
   for (int i = physics.numberOfSprings()-1; i >= 0; i--) {
     physics.removeSpring(i);
@@ -32,4 +33,5 @@ void removeAllSprings() {
   for (Particle q : anchors) {
     q.makeFixed();
   }
+  isTriggerRemoveSpring = true;
 }
