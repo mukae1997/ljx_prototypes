@@ -4,13 +4,13 @@ void mouseMoved() {
 
 void mousePressed() {
   //add Atrraction
-  for ( int i = 0; i < others.length; i++ ) {
-    physics.makeAttraction( mouse, others[i], -500, 0.15 );
-  }
-  mouse.position().set( mouseX, mouseY, 0 );
+  //for ( int i = 0; i < others.length; i++ ) {
+  //  physics.makeAttraction( mouse, others[i], -500, 0.15 );
+  //}
+  //mouse.position().set( mouseX, mouseY, 0 );
 
 
-  expandTimer.reset();
+  //expandTimer.reset();
 }
 
 void mouseDragged() {
@@ -18,22 +18,26 @@ void mouseDragged() {
 }
 
 void mouseReleased() {
-  for ( int i = 0; i < physics.numberOfAttractions(); i++ ) {
-    Attraction t = physics.getAttraction(i);
-    t.setStrength(-200);
-  }
 
-  for ( int i = 0; i < physics.numberOfAttractions(); i++ ) {
-    physics.removeAttraction(i);
-  }
+  oscillTimer.reset();
+
+  //for ( int i = 0; i < physics.numberOfAttractions(); i++ ) {
+  //  Attraction t = physics.getAttraction(i);
+  //  t.setStrength(-200);
+  //}
+
+  //for ( int i = 0; i < physics.numberOfAttractions(); i++ ) {
+  //  physics.removeAttraction(i);
+  //}
 
   unknown_factor = random(6, 12);
+  //unknown_factor = 1;
   println(unknown_factor);
 }
 
 void mouseClicked() {
   ratioForSave=1;
-  int choice=int(random(1, 5));
+  int choice = int(random(1, 5));
 
   if (choice == 1)
     drop1.trigger();
@@ -57,8 +61,7 @@ void keyPressed() {
     USE_IMG = !USE_IMG;
   }
 
-  if (keyCode == 'C') {
-
+  if (keyCode == 'C') { 
     spiral=!spiral;
     oscillTimer.reset();
   }
